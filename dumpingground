@@ -1,0 +1,74 @@
+# Paste-dump
+Just a paste Dump currently with Random Scripts TBD
+
+____________________________________________________
+Outlook Credentials login
+### Connect to Outlook
+$Outlook = New-Object -ComObject Outlook.Application
+$NameSpace = $Outlook.GetNameSpace("MAPI")
+$NameSpace.Logon("Outlook", "", $False, $True)
+
+### Connect to Word
+$Word = New-Object -ComObject Word.Application
+$Word.Visible = $True
+$Word.Activate()
+$Word.UserName = "OutlookUserName"
+$Word.UserInitials = "OU"
+$Word.UserAddress = "outlook@example.com"
+
+### Login to Outlook
+$Username = "OutlookUsername"
+$Password = "OutlookPassword" | ConvertTo-SecureString -AsPlainText -Force
+$Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
+$Session = $Outlook.Session
+$Session.AddStoreEx("Outlook", $OlStoreType::olMailbox)
+$Session.Logon("Outlook", $Cred)
+
+__________________________________________
+Multiple accounts
+# Connect to Outlook
+$Outlook = New-Object -ComObject Outlook.Application
+$NameSpace = $Outlook.GetNameSpace("MAPI")
+$NameSpace.Logon("Outlook", "", $False, $True)
+
+# Connect to Word
+$Word = New-Object -ComObject Word.Application
+$Word.Visible = $True
+$Word.Activate()
+
+# Define an array of accounts
+$accounts = @(
+    @{
+        'username' = "OutlookUsername1"
+        'password' = "OutlookPassword1"
+        'name' = "OutlookUserName1"
+        'initials' = "OU1"
+        'address' = "outlook1@example.com"
+    },
+    @{
+        'username' = "OutlookUsername2"
+        'password' = "OutlookPassword2"
+        'name' = "OutlookUserName2"
+        'initials' = "OU2"
+        'address' = "outlook2@example.com"
+    }
+)
+
+# Iterate through the accounts
+foreach ($account in $accounts) {
+    # Set Word user name, initials and address
+    $Word.UserName = $account.name
+    $Word.UserInitials = $account.initials
+    $Word.UserAddress = $account.address
+
+    # Login to Outlook
+    $Username = $account.username
+    $Password = $account.password | ConvertTo-SecureString -AsPlainText -Force
+    $Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
+    $Session = $Outlook.Session
+    $Session.AddStoreEx("Outlook", $OlStoreType::olMailbox)
+    $Session.Logon("Outlook", $Cred)
+}
+
+
+________________________________________________________________________
